@@ -1,4 +1,6 @@
-<h1 align=center>SqliSearch</h1>
+<div align=center>
+  <img src="banner.png" width="75%"/>
+</div>
 
 ## License
 
