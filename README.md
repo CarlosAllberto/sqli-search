@@ -1,4 +1,4 @@
-<h1 align=center>🔎SqlSearch🔍</h1>
+<h1 align=center>SqliSearch</h1>
 
 ## License
 
@@ -14,8 +14,11 @@ automaticamente usando `googlesearch` e faz o teste de erro para saber se o site
   <img src="img.png" width="70%"/>
 </div>
 <br/><br/>
+
+### no Termux:
+
 <div align=center>  
-  <img src="download.png" width="70%"/>
+  <img src="android.jpg" width="70%"/>
 </div>
 
 ## Instalação:
