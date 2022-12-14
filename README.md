@@ -1,5 +1,5 @@
 <div align=center>
-  <img src="banner.png" width="75%"/>
+  <img src="./assets/banner.png" width="75%"/>
 </div>
 
 ## License
@@ -13,8 +13,8 @@ quanto tempo você ja gastou procurando sites vulneraveis a SQLI e fazendo teste
 automaticamente usando `googlesearch` e faz o teste de erro para saber se o site é vulneravel.
 
 <div align=center style="display: flex;">
-  <img src="img.png" width="70%"/>
-  <img src="android.jpg" width="20%"/>
+  <img src="./assets/img.png" width="70%"/>
+  <img src="./assets/android.jpg" width="20%"/>
 </div>
 <br/><br/>
 
