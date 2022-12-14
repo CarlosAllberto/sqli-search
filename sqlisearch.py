@@ -30,12 +30,12 @@ bannerString = """
 """
 
 bannerAndroid = """
-        ███████  ██████  ██      ██ 
-        ██      ██    ██ ██      ██ 
-        ███████ ██    ██ ██      ██ 
-             ██ ██ ▄▄ ██ ██      ██ 
-        ███████  ██████  ███████ ██ 
-                    ▀▀              
+███████  ██████  ██      ██ 
+██      ██    ██ ██      ██ 
+███████ ██    ██ ██      ██ 
+     ██ ██ ▄▄ ██ ██      ██ 
+███████  ██████  ███████ ██ 
+            ▀▀              
 ███████ ███████  █████  ██████   ██████ ██   ██ 
 ██      ██      ██   ██ ██   ██ ██      ██   ██ 
 ███████ █████   ███████ ██████  ██      ███████ 
@@ -64,7 +64,9 @@ def banner():
 
 class SqliSearch:
     def __init__(self):
-        pass
+        banner()
+        self.checkNet()
+        self.checkFile()
 
     def checkNet(self):
         try:
@@ -101,9 +103,6 @@ class SqliSearch:
             pass
 
     def main(self):
-        banner()
-        self.checkNet()
-        self.checkFile()
         cont = 0
         if search != None:
             dork = "inurl: php?id="
@@ -149,6 +148,6 @@ class SqliSearch:
 
 if __name__ == "__main__":
     if url != None:
-        print("\nem breve....  :)\n")
+        SqliSearch().testSqli(url)
     else: 
         SqliSearch().main()

@@ -13,7 +13,8 @@ quanto tempo você ja gastou procurando sites vulneraveis a SQLI e fazendo teste
 automaticamente usando `googlesearch` e faz o teste de erro para saber se o site é vulneravel.
 
 <div align=center>
-  <img src="img.png" width="70%"/>
+  <img src="img.png" width="50%"/>
+  <img src="android.jpg" width="50%"/>
 </div>
 <br/><br/>
 
