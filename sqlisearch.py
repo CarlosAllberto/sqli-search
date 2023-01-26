@@ -95,6 +95,7 @@ class SqliSearch:
     #verifica se o site é vulneravel sqli
     def testSqli(self, url):
         rq = requests.session()
+        fileVulner = open("sites-vulneraveis.txt", "a")
         try:
             response = rq.get(f"{url}\'", headers=headers, timeout=10)
             if "mysql_fetch_array()" in response.text or "MySQL" in response.text:
@@ -102,6 +103,7 @@ class SqliSearch:
                     print(f"{Fore.GREEN}[+] {url}{Fore.RESET}\n")
                 else:
                     print(f"{Fore.GREEN}[+] {'Vulnerable!:':<15}{url}{Fore.RESET}\n")
+                fileVulner.write(f"{url}\n")
             else:
                 if "android" in str(platform.stdout.lower()):
                     print(f"[-] {url}\n")
@@ -109,6 +111,7 @@ class SqliSearch:
                     print(f"[-] {'Not Vuln:':<15}{url}\n")
         except:
             pass
+        fileVulner.close()
 
     #função principal
     def main(self):
@@ -130,6 +133,7 @@ class SqliSearch:
 
             except KeyboardInterrupt:
                 print("saindo\n")
+                print(f"{Fore.GREEN}todos os sites vulneraveis foram salvos em: sites-vulneraveis.txt{Fore.GREEN}\n")
                 exit()
             except ConnectionRefusedError:
                 print("tente usar uma vpn.\n")
@@ -150,6 +154,7 @@ class SqliSearch:
                     sleep(120)
                 except KeyboardInterrupt:
                     print("saindo\n")
+                    print(f"{Fore.GREEN}todos os sites vulneraveis foram salvos em: sites-vulneraveis.txt{Fore.GREEN}\n")
                     exit()
                 except ConnectionRefusedError:
                     print("tente usar uma vpn.\n")
