@@ -5,7 +5,7 @@ import argparse
 from os import system
 from colorama import Fore, Style
 from time import sleep
-import googlesearch
+from googlesearch import search
 from dankware import align
 import subprocess
 
@@ -115,21 +115,14 @@ class SqliSearch:
 
     #função principal
     def main(self):
-        cont = 0
-        if search != None:
+        if search:
             dork = "inurl: php?id="
             try:
-                results = googlesearch.search(f"{search} {dork}", num_results=100)
-                for url in results:
-                    self.testSqli(url)
-                    if cont == 20:
-                        cont = 0
-                        #adiciona um sleep de dois minutos para não ser bloqueado 
-                        print(align(f"{Fore.CYAN}sleeping for 120 seconds, be patient please. \t(ᴗ˳ᴗ) zzZZzzZZ{Fore.RESET}\n"))
-                        sleep(120)
-                    else:
-                        sleep(1)
-                    cont += 1
+                for result in search(f"{search} {dork}", sleep_interval=5, num_results=200):
+                    self.testSqli(result)
+                    #adiciona um sleep de dois minutos para não ser bloqueado 
+                    print(align(f"{Fore.CYAN}sleeping for 60 seconds, be patient please. \t(ᴗ˳ᴗ) zzZZzzZZ{Fore.RESET}\n"))
+                    sleep(60)
 
             except KeyboardInterrupt:
                 print("saindo\n")
@@ -142,16 +135,13 @@ class SqliSearch:
                 pass
 
         else:
-            dorksFile = open("dorksFile.txt", "r").read().split()
-            for dork in dorksFile:
+            for dork in open("dorksFile.txt", "r").read().split():
                 try:
-                    results = googlesearch.search(dork, num_results=20)
-                    for url in results:
-                        self.testSqli(url)
-                        sleep(1)
+                    for result in search(dork, sleep_interval=5, num_results=200):
+                        self.testSqli(result)
                     #adiciona um sleep de dois minutos para não ser bloqueado 
-                    print(align(f"{Fore.CYAN}[Z] sleeping for 120 seconds, be patient please. \t(ᴗ˳ᴗ) zzZZzzZZ{Fore.RESET}\n"))
-                    sleep(120)
+                    print(align(f"{Fore.CYAN}[Z] sleeping for 60 seconds, be patient please. \t(ᴗ˳ᴗ) zzZZzzZZ{Fore.RESET}\n"))
+                    sleep(60)
                 except KeyboardInterrupt:
                     print("saindo\n")
                     print(f"{Fore.GREEN}todos os sites vulneraveis foram salvos em: sites-vulneraveis.txt{Fore.GREEN}\n")
@@ -163,7 +153,7 @@ class SqliSearch:
                     pass
 
 if __name__ == "__main__":
-    if url != None:
+    if url:
         SqliSearch().testSqli(url)
     else: 
         SqliSearch().main()
