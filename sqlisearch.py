@@ -1,156 +1,83 @@
 #!/usr/bin/python3
 
 import requests
+from sys import exit
 import argparse
 from os import system
-from colorama import Fore, Style
+from colorama import Fore
 from time import sleep
 from googlesearch import search
 from dankware import align
-import subprocess
+from src.core.banner import banner
+from src.core.checkFile import checkFile
+from src.core.checkNet import checkNet
+from src.core.printVuln import printVuln
+from headers import headers
 
-#verifica plataforma android
-platform = subprocess.run("uname -o", stdout=subprocess.PIPE, shell=True)
-
-#configuração de argumentos por cli
+# recebe os argumentos passados
 parse = argparse.ArgumentParser(description="SqliSearch")
-parse.add_argument("-s", "--search", type=str, help="pesquisa algo especifico")
+parse.add_argument("-f", "--find", type=str, help="pesquisa algo especifico")
 parse.add_argument("-u", "--url", type=str, help="passe uma url para testar sqli")
-args   = parse.parse_args()
-search = args.search
-url    = args.url
-
-bannerString = """
-███████╗ ██████╗ ██╗     ██╗███████╗███████╗ █████╗ ██████╗  ██████╗██╗  ██╗
-██╔════╝██╔═══██╗██║     ██║██╔════╝██╔════╝██╔══██╗██╔══██╗██╔════╝██║  ██║
-███████╗██║   ██║██║     ██║███████╗█████╗  ███████║██████╔╝██║     ███████║
-╚════██║██║▄▄ ██║██║     ██║╚════██║██╔══╝  ██╔══██║██╔══██╗██║     ██╔══██║
-███████║╚██████╔╝███████╗██║███████║███████╗██║  ██║██║  ██║╚██████╗██║  ██║
-╚══════╝ ╚══▀▀═╝ ╚══════╝╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
-
-"""
-
-bannerAndroid = """
-███████  ██████  ██      ██ 
-██      ██    ██ ██      ██ 
-███████ ██    ██ ██      ██ 
-     ██ ██ ▄▄ ██ ██      ██ 
-███████  ██████  ███████ ██ 
-            ▀▀              
-███████ ███████  █████  ██████   ██████ ██   ██ 
-██      ██      ██   ██ ██   ██ ██      ██   ██ 
-███████ █████   ███████ ██████  ██      ███████ 
-     ██ ██      ██   ██ ██   ██ ██      ██   ██ 
-███████ ███████ ██   ██ ██   ██  ██████ ██   ██ 
-                                                
-"""
-
-#cabecalho de requisição
-headers = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:104.0) Gecko/20100101 Firefox/104.0",
-    "accept-language": "pt-BR,pt;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-    "referer": "https://google.com/",
-}
-
-#função imprimir banner
-def banner():
-    system("clear")
-    #se for android
-    if "android" in str(platform.stdout.lower()):
-        print(align(f"{Fore.YELLOW}{Style.BRIGHT}{bannerAndroid}{Style.RESET_ALL}"))
-    #se não for android
-    else:
-        print(align(f"{Fore.YELLOW}{Style.BRIGHT}{bannerString}{Style.RESET_ALL}"))
-    print(align(f"{Fore.YELLOW}[-]              Version: 1.0.0              [-]{Fore.RESET}"))
-    print(align(f"{Fore.YELLOW}[-]          Author: Carlos Alberto          [-]{Fore.RESET}"))
-    print(align(f"{Fore.YELLOW}[-]   GitHub: www.github.com/CarlosAllberto  [-]{Fore.RESET}"))
-    print(align(f"[*]            *****************             [*]"))
-    print(align(f"{Fore.RED}SqliScan is an automation in python \nto facilitate the search of sites vulnerable to sql injection. \nit also helps when hacking using gui with tkinter and sqlmap. \ni hope it helps you.{Fore.RESET}\n"))
+args = parse.parse_args()
+find = args.find
+url = args.url
 
 class SqliSearch:
     def __init__(self):
         banner()
-        self.checkNet()
-        self.checkFile()
+        checkNet()
+        checkFile()
 
-    #verifica conexão com internet
-    def checkNet(self):
-        try:
-            requests.get("https://http.cat", headers=headers)
-        except:
-            print(f"{Fore.RED}[-] internet: OFF{Fore.RESET}")
-            exit()
-        else:
-            pass
-
-    #verifica se o arquivo de dorks esta presente
-    def checkFile(self):
-        try:
-            dorksFile = open("./dorksFile.txt", "r")
-            dorksFile.close()
-        except:
-            print(f"{Fore.RED}[-] arquivo com dorks não encontrado{Fore.RESET}")
-            print(f"{Fore.RED}tente criar: dorksFile.txt{Fore.RESET}\n")
-
-    #verifica se o site é vulneravel sqli
+    # verifica se o site é vulnerável à sqli
     def testSqli(self, url):
-        rq = requests.session()
         fileVulner = open("sites-vulneraveis.txt", "a")
+        rq = requests.session()
         try:
-            response = rq.get(f"{url}\'", headers=headers, timeout=10)
-            if "mysql_fetch_array()" in response.text or "MySQL" in response.text:
-                if "android" in str(platform.stdout.lower()):
-                    print(f"{Fore.GREEN}[+] {url}{Fore.RESET}\n")
-                else:
-                    print(f"{Fore.GREEN}[+] {'Vulnerable!:':<15}{url}{Fore.RESET}\n")
+            response = rq.get(f"{url}\'", headers=headers, timeout=10).text
+            if "mysql_fetch_array()" in response or "MySQL" in response:
+                printVuln(url, True)
                 fileVulner.write(f"{url}\n")
             else:
-                if "android" in str(platform.stdout.lower()):
-                    print(f"[-] {url}\n")
-                else:
-                    print(f"[-] {'Not Vuln:':<15}{url}\n")
+                printVuln(url, False)
+        
+        except KeyboardInterrupt:
+            exit(f"{Fore.GREEN}todos os sites vulneraveis foram salvos em: sites-vulneraveis.txt{Fore.GREEN}\n")
         except:
             pass
         fileVulner.close()
 
-    #função principal
+    # função principal
     def main(self):
-        if search:
-            dork = "inurl: php?id="
+        if find:
             try:
-                for result in search(f"{search} {dork}", sleep_interval=5, num_results=200):
+                for result in search(f"{find} inurl: php?id=", num_results=200):
                     self.testSqli(result)
-                    #adiciona um sleep de dois minutos para não ser bloqueado 
-                    print(align(f"{Fore.CYAN}sleeping for 60 seconds, be patient please. \t(ᴗ˳ᴗ) zzZZzzZZ{Fore.RESET}\n"))
-                    sleep(60)
 
             except KeyboardInterrupt:
-                print("saindo\n")
-                print(f"{Fore.GREEN}todos os sites vulneraveis foram salvos em: sites-vulneraveis.txt{Fore.GREEN}\n")
-                exit()
+                exit(f"{Fore.GREEN}todos os sites vulneraveis foram salvos em: sites-vulneraveis.txt{Fore.GREEN}\n")
             except ConnectionRefusedError:
-                print("tente usar uma vpn.\n")
-                exit()
-            except:
-                pass
+                exit("tente usar uma vpn.\n")
 
         else:
+            cont = 0
             for dork in open("dorksFile.txt", "r").read().split():
                 try:
-                    for result in search(dork, sleep_interval=5, num_results=200):
+                    for result in search(dork, num_results=5):
                         self.testSqli(result)
-                    #adiciona um sleep de dois minutos para não ser bloqueado 
-                    print(align(f"{Fore.CYAN}[Z] sleeping for 60 seconds, be patient please. \t(ᴗ˳ᴗ) zzZZzzZZ{Fore.RESET}\n"))
-                    sleep(60)
+                    if cont >= 10:
+                        # adiciona um sleep de dois minutos para não ser bloqueado pelo Google
+                        print(align(f"{Fore.CYAN}[Z] sleeping for 120 seconds, be patient please. \t(ᴗ˳ᴗ) zzZZzzZZ{Fore.RESET}\n"))
+                        sleep(120)
+                        cont = 0
+                    else:
+                        cont += 1
+
                 except KeyboardInterrupt:
-                    print("saindo\n")
-                    print(f"{Fore.GREEN}todos os sites vulneraveis foram salvos em: sites-vulneraveis.txt{Fore.GREEN}\n")
-                    exit()
+                    exit(f"{Fore.GREEN}todos os sites vulneraveis foram salvos em: sites-vulneraveis.txt{Fore.GREEN}\n")
                 except ConnectionRefusedError:
-                    print("tente usar uma vpn.\n")
-                    exit()
+                    exit("tente usar uma vpn.\n")
                 except:
-                    pass
+                    exit("erro desconhecido. por favor relate em: https://github.com/CarlosAllberto/SqliSearch/issues")
 
 if __name__ == "__main__":
     if url:
